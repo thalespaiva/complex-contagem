@@ -25,10 +25,15 @@
 \usepackage{amsmath,amsfonts,amsthm,mathtools} % Math packages
 \usepackage{xspace}
 \usepackage{indentfirst}
+\usepackage{placeins}
 
 \newtheorem{theorem}{Teorema}
 \newtheorem{definition}{Definição}
  
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+\usetikzlibrary{positioning}
+\usetikzlibrary{calc}
 
 %\usepackage{sectsty} % Allows customizing section commands
 %\allsectionsfont{\centering \normalfont\scshape} % Make all sections centered, the default font and small caps
@@ -47,7 +52,7 @@
 %\subsectionfont{\bfseries\Large\raggedright}
 
 %\numberwithin{equation}{section} % Number equations within sections (i.e. 1.1, 1.2, 2.1, 2.2 instead of 1, 2, 3, 4)
-%\numberwithin{figure}{section} % Number figures within sections (i.e. 1.1, 1.2, 2.1, 2.2 instead of 1, 2, 3, 4)
+\numberwithin{figure}{section} % Number figures within sections (i.e. 1.1, 1.2, 2.1, 2.2 instead of 1, 2, 3, 4)
 %\numberwithin{table}{section} % Number tables within sections (i.e. 1.1, 1.2, 2.1, 2.2 instead of 1, 2, 3, 4)
 
 %\setlength\parindent{0pt} % Removes all indentation from paragraphs - comment this line for an assignment with lots of text
@@ -66,11 +71,6 @@
 %\horrule{2pt} \\[0.5cm] % Thick bottom horizontal rule
 }
 
-%\renewcommand{\P}{P }
-%\newcommand{\SP}{\#P }
-%\newcommand{\NP}{NP }
-%\newcommand{\FP}{FP }
-%\newcommand{\PP}{PP }
 
 \newcommand{\perm}{perm}
 
@@ -142,7 +142,7 @@ Calcular o permanente de uma matriz $n \times n$ pode ser interpretado como enco
 
 \subsection{Cobertura por Ciclos}
 
-
+\pagebreak
 \subsection{Demonstração}
 
 \begin{theorem}[Valiant 1979] \prob{permanente} é \SP-completo.
@@ -150,7 +150,7 @@ Calcular o permanente de uma matriz $n \times n$ pode ser interpretado como enco
 
 \begin{proof}
 
-Queremos reduzir \prob{\#3SAT} a \prob{permanente}. Para isso, dada uma fórmula $\phi$ na 3-FNC, devemos construir um digrafo $ G $ cujas coberturas de ciclos correspondam a valorações das variáveis de $\phi$ que a satisfazem.
+Queremos reduzir \prob{\#3sat} a \prob{permanente}. Para isso, dada uma fórmula $\phi$ na 3-FNC, devemos construir um digrafo $ G $ cujas coberturas de ciclos correspondam a valorações das variáveis de $\phi$ que a satisfazem.
 
 Seja $\phi$ uma fórmula na forma normal conjuntiva com exatamente 3 variáveis por cláusula sobre as variáveis em $ X = \{x_1, \bar{x_1}, x_2, \bar{x_2} \dots, x_n, \bar{x_n} \} $. Assim, temos que
 \begin{align*}
@@ -160,17 +160,186 @@ onde cada cláusula $C_i$ é da forma $C_i = (y_{i1} \lor y_{i2} \lor y_{i3} )$,
 
 Iremos considerar três dispositivos para construir o digrafo $ G $ relacionado. Cada dispositivo representa alguma característica ou restrição de uma fórmula na 3-FNC em um digrafo. Os dispositivos e suas descrições resumidas são dadas a seguir.
 
-\begin{description}
-  \item[Dispositivo de Valoração $D_v$ :] \hfill \\
-      Cada variável gera um dispositivo de valoração. Sua valoração está associada univocamente a como os dois vértices deste dispositivo são cobertos por uma cobertura de ciclos de $G$. A representação gráfica de $D_v$ para uma variável $x$ é:
+\paragraph{Dispositivo de Valoração $D_V$ :} \hfill \\
+
+      Cada variável gera um dispositivo de valoração. Sua valoração está associada univocamente a como os dois vértices deste dispositivo são cobertos por uma cobertura de ciclos de $G$. A representação gráfica de $D_v$ para uma variável $x$ pode ser vista na Figura~\ref{fig:Dv}, em que $0$ e $1$ representam respectivamente os valores verdadeiro e falso. Dois dos arcos estão pontilhados pois poderão ser acoplados a outros dispositivos na construção de $G$.
       
-      
-      
-  \item[Dispositivo de Cláusula:] \hfill \\
-    sdf
-  \item[Dispositivo de Valoração Exclusiva:] \hfill \\
-    dsdf
-\end{description}
+\FloatBarrier
+\begin{figure}
+\centering
+\begin{tikzpicture}[->,>=stealth',auto,node distance=3cm,
+  thick,main node/.style={circle,draw,font=\sffamily\Large\bfseries}]
+
+  \node[main node] (1) { };
+  \node[main node] (2) [below of=1] { };
+
+  \path[every node/.style={font=\sffamily\small}]
+    (1) edge node {} (2)
+    (2) edge[dashed, bend right] node [right] {$x = 0$} (1)
+    (2) edge[dashed, bend left] node [left] {$x = 1$} (1);
+\end{tikzpicture}
+\caption{Dispositivo de valoração para variável $x$}
+\label{fig:Dv}
+\end{figure}
+
+\paragraph{Dispositivo de Cláusula $D_C:$} \hfill \\
+
+Semelhante ao dispositivo anterior, cada cláusula gera um dispositivo de cláusula. Este dispositivo captura a restrição de que ao menos uma das expressões componentes de uma cláusula deve ser verdadeiro. Assim, para uma cláusula $C$, cada ciclo em seu dispositivo associado corresponde a uma valoração que faz $C$ ser satisfeita.
+
+Nesse dispositivo, três arcos externos representam as valorações que fazem cada expressão de uma cláusula $C = (y_1 \lor y_2 \lor y_3)$ ser falsa. Podemos ver na Figura~\ref{fig:Dc} que não pode haver cobertura de ciclos que percorra os três arcos externos. Também vemos que para qualquer aresta externa ou par de arestas externas, há apenas uma cobertura de ciclos do dispositivo. Aqui, os arcos externos estão tracejados pois serão conectados a dispositivos de valoração através de dispositivos de valoração exclusiva.
+
+\begin{figure}
+\centering
+\begin{tikzpicture}[->,>=stealth',auto,node distance=3cm,
+  thick,main node/.style={circle,draw,font=\sffamily\Large\bfseries}]
+
+  \node[main node] (1) { };
+  \node[main node] (4) [below of=1] { };
+  \node[main node] (2) [below left of=4] { };
+  \node[main node] (3) [below right of=4] { };
+  \path[every node/.style={font=\sffamily\small}]
+    (1) edge[dashed, bend right] node [left]{$y_1 = 0$} (2)
+    (2) edge[dashed, bend right] node [below]{$y_2 = 0$} (3)
+    (3) edge[dashed, bend right] node [right]{$y_3 = 0$} (1)
+    
+    (1) edge[bend right=10] node {} (4)
+    (4) edge[bend right=10] node {} (1)
+    (2) edge[bend right=10] node {} (4)
+    (4) edge[bend right=10] node {} (2)
+    (3) edge[bend right=10] node {} (4)
+    (4) edge[bend right=10] node {} (3)
+    (2) edge[bend left=10] node {} (3)
+    (3) edge[bend left=10] node {} (2)
+%    (2) edge[dashed, bend right] node [right] { } (1)
+%    (2) edge[dashed, bend left] node [left] { } (1);
+;
+\end{tikzpicture}
+\caption{Dispositivo de cláusula para a cláusula $C = (y_1 \lor y_2 \lor y_3)$}
+\label{fig:Dc}
+\end{figure}
+\FloatBarrier
+
+\paragraph{Dispositivo de Valoração Exclusiva $D_\oplus$:} \hfill \\
+
+Este dispositivo é o que garante a consistência entre os dispositivos de valoração e de cláusulas. Queremos garantir que uma cobertura de ciclos de $G$ não possua arestas que se contradizem. Ou seja, garantir que as cobertura dos dispositivos de valoração para cada variável de uma cláusula $C$ não entrem em conflito com as coberturas de $C$.
+
+Como exemplo, suponha que a fórmula $\phi$ seja composta por apenas duas cláusulas e dada por
+
+$$
+\phi = C_1 \land C_2 = (x_1 \lor x_2 \lor \bar{x_3})\land(\bar{x_2} \lor x_3 \lor \bar{x_4}).
+$$
+
+Um esquema do digrafo para $ \phi $ é dado na Figura~\ref{fig:Doplus}. Nesta figura, os $D_\oplus$ representam os dispositivos de valoração exclusiva que devem ser acoplados às arestas contraditórias.
+
+Gostaríamos que $D_\oplus$ garantisse que exatamente uma das arestas contraditórias fosse atravessada. Porém, se isso fosse possível, esta redução seria parcimoniosa, o que implica $ \P = \NP$. Isso pois \prob{permanente} e \prob{3sat} teriam igual número de soluções. E como sabemos dizer se $ \perm(A) \geq 0 $ eficientemente, saberíamos dizer se uma instância de \prob{3sat} tem ao menos uma solução.
+
+Assim, usaremos um digrafo com pesos nas arestas para desconsiderar coberturas de ciclos de $G$ que usem valorações contraditórias.
+
+
+
+
+
+
+
+\begin{figure}
+\centering
+\begin{tikzpicture}[->,>=stealth',auto,node distance=2cm,
+  thick,main node/.style={circle,draw,font=\sffamily\Large\bfseries}]
+  
+  \node[main node] (A1) [] { };
+  \node[main node] (D1) [below of=A1] { };
+  \node[main node] (B1) [below left of=D1] { };
+  \node[main node] (C1) [below right of=D1] { };
+  \path[every node/.style={font=\sffamily\small}]
+    (A1) edge[dashed, bend right] node [left]{$x_1 = 0$} (B1)
+    (B1) edge[dashed, bend right] node [below]{$x_2 = 0$} (C1)
+    (C1) edge[dashed, bend right] node [right]{$\bar{x_3} = 0$} (A1)
+
+    (A1) edge[bend right=10] node {} (D1)
+    (D1) edge[bend right=10] node {} (A1)
+    (B1) edge[bend right=10] node {} (D1)
+    (D1) edge[bend right=10] node {} (B1)
+    (C1) edge[bend right=10] node {} (D1)
+    (D1) edge[bend right=10] node {} (C1)
+    (B1) edge[bend left=10] node {} (C1)
+    (C1) edge[bend left=10] node {} (B1);  
+    
+  \node[main node] (A2) [right=6 of A1] { };
+  \node[main node] (D2) [below of=A2] { };
+  \node[main node] (B2) [below left of=D2] { };
+  \node[main node] (C2) [below right of=D2] { };
+  \path[every node/.style={font=\sffamily\small}]
+    (A2) edge[dashed, bend right] node [left]{$x_3 = 0$} (B2)
+    (B2) edge[dashed, bend right] node [below]{$\bar{x_2} = 0$} (C2)
+    (C2) edge[dashed, bend right] node [right]{$\bar{x_4} = 0$} (A2)
+
+    (A2) edge[bend right=10] node {} (D2)
+    (D2) edge[bend right=10] node {} (A2)
+    (B2) edge[bend right=10] node {} (D2)
+    (D2) edge[bend right=10] node {} (B2)
+    (C2) edge[bend right=10] node {} (D2)
+    (D2) edge[bend right=10] node {} (C2)
+    (B2) edge[bend left=10] node {} (C2)
+    (C2) edge[bend left=10] node {} (B2);  \node[main node] (A2) { };
+
+--
+  \node[main node] (2) [left of=B1] { };
+  \node[main node] (1) [above of=2]{ };
+  \path[every node/.style={font=\sffamily\small}]
+    (1) edge node {} (2)
+    (2) edge[dashed, bend right] node [right] {$x_1 = 1$} (1)
+    (2) edge[bend left] node [left] {$x_1 = 0$} (1);
+
+  %\draw node[] (Dx) [below right=0.1 and 0.1 of 1] {$D_\oplus$};
+
+  \node[main node] (3) [right of=C2] { };
+  \node[main node] (4) [above of=3]{ };
+  \path[every node/.style={font=\sffamily\small}]
+    (4) edge node {} (3)
+    (3) edge[dashed, bend left] node [left] {$x_4 = 0$} (4)
+    (3) edge[bend right] node [right] {$x_4 = 1$} (4);
+    
+
+  \node[main node] (8) at ($(C1)!0.5!(B2)$) { }; %[left of=B2]{ };
+  \node[main node] (7) [below of=8] { };
+  \path[every node/.style={font=\sffamily\small}]
+    (8) edge node {} (7)
+    (7) edge[dashed, bend left] node [left] {$x_2 = 1$} (8)
+    (7) edge[dashed, bend right] node [right] {$x_2 = 0$} (8);
+
+  \node[main node] (5) [above of=8] {};%at ($(A2)!0.5!(A1)$) { } ;%[right of=A1] { };
+  \node[main node] (6) [above of=5]{ };
+  \path[every node/.style={font=\sffamily\small}]
+    (6) edge node {} (5)
+    (5) edge[dashed, bend left] node [left] {$x_3 = 0$} (6)
+    (5) edge[dashed, bend right] node [right] {$x_3 = 1$} (6);
+
+  \draw node[circle] [below right=0.1 and 0.7 of 1] {$D_\oplus$};
+
+  \draw node[circle] [below left=0.1 and 0.7 of 4] {$D_\oplus$};
+ 
+  \draw node[circle] [above right=0.00 and 0.7 of 5] {$D_\oplus$};
+  \draw node[circle] [above left=0.00 and 0.7 of 5] {$D_\oplus$};
+
+  \draw node[circle] [above right=0.5 and 1.6 of 7] {$D_\oplus$};
+  \draw node[circle] [above left=0.5 and 1.6 of 7] {$D_\oplus$};
+  
+\end{tikzpicture}
+\caption{$D_\oplus$ para forçar o uso exclusivo de arestas contraditórias}
+\label{fig:Doplus}
+\end{figure}
+
+
+
+
+
+
+
+
+%  \node[main node] (D1) [below right of=2] {$D_\oplus$};
+
+
+
 
 
 
