@@ -1,0 +1,200 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Short Sectioned Assignment
+% LaTeX Template
+% Version 1.0 (5/5/12)
+%
+% This template has been downloaded from:
+% http://www.LaTeXTemplates.com
+%
+% Original author:
+% Frits Wenneker (http://www.howtotex.com)
+%
+% License:
+% CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass[paper=a4, fontsize=11pt]{scrartcl} % A4 paper and 11pt font size
+\usepackage[brazilian]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amsfonts,amsthm,mathtools} % Math packages
+\usepackage{xspace}
+\usepackage{indentfirst}
+
+\newtheorem{theorem}{Teorema}
+\newtheorem{definition}{Definição}
+ 
+
+%\usepackage{sectsty} % Allows customizing section commands
+%\allsectionsfont{\centering \normalfont\scshape} % Make all sections centered, the default font and small caps
+
+\usepackage{fancyhdr} % Custom headers and footers
+\pagestyle{fancyplain} % Makes all pages in the document conform to the custom headers and footers
+\fancyhead{} % No page header - if you want one, create it in the same way as the footers below
+\fancyfoot[L]{} % Empty left footer
+\fancyfoot[C]{} % Empty center footer
+\fancyfoot[R]{\thepage} % Page numbering for right footer
+\renewcommand{\headrulewidth}{0pt} % Remove header underlines
+\renewcommand{\footrulewidth}{0pt} % Remove footer underlines
+\setlength{\headheight}{13.6pt} % Customize the height of the header
+
+%\sectionfont{\bfseries\Large\raggedright}
+%\subsectionfont{\bfseries\Large\raggedright}
+
+%\numberwithin{equation}{section} % Number equations within sections (i.e. 1.1, 1.2, 2.1, 2.2 instead of 1, 2, 3, 4)
+%\numberwithin{figure}{section} % Number figures within sections (i.e. 1.1, 1.2, 2.1, 2.2 instead of 1, 2, 3, 4)
+%\numberwithin{table}{section} % Number tables within sections (i.e. 1.1, 1.2, 2.1, 2.2 instead of 1, 2, 3, 4)
+
+%\setlength\parindent{0pt} % Removes all indentation from paragraphs - comment this line for an assignment with lots of text
+
+%----------------------------------------------------------------------------------------
+%	TITLE SECTION
+%----------------------------------------------------------------------------------------
+
+\newcommand{\horrule}[1]{\rule{\linewidth}{#1}} % Create horizontal rule command with 1 argument of height
+
+\title{	
+\normalfont \normalsize 
+\textsc{DCC-IME-USP} \\ [25pt] % Your university, school and/or department name(s)
+%\horrule{0.5pt} \\[0.4cm] % Thin top horizontal rule
+\huge Complexidade de Contagem \\ % The assignment title
+%\horrule{2pt} \\[0.5cm] % Thick bottom horizontal rule
+}
+
+%\renewcommand{\P}{P }
+%\newcommand{\SP}{\#P }
+%\newcommand{\NP}{NP }
+%\newcommand{\FP}{FP }
+%\newcommand{\PP}{PP }
+
+\newcommand{\perm}{perm}
+
+\renewcommand{\P}{\textbf{P}\xspace}
+\newcommand{\SP}{\textbf{\#P}\xspace}
+\newcommand{\NP}{\textbf{NP}\xspace}
+\newcommand{\FP}{\textbf{FP}\xspace}
+\newcommand{\PP}{\textbf{PP}\xspace}
+
+\newcommand{\Pc}{\textbf{P-completo}}\xspace
+\newcommand{\SPc}{\textbf{\#P-completo}\xspace}
+\newcommand{\NPc}{\textbf{NP-completo}\xspace}
+\newcommand{\FPc}{\textbf{FP-completo}\xspace}
+\newcommand{\PPc}{\textbf{PP-completo}\xspace}
+
+\newcommand{\prob}[1]{\textsc{\textbf{#1}}}
+
+
+\author{Thales A. B. Paiva \\ thalespaiva@gmail.com} % Your name
+
+\date{\normalsize\today} % Today's date or a custom date
+
+
+
+\begin{document}
+
+
+\maketitle % Print the title
+\tableofcontents
+
+
+%----------------------------------------------------------------------------------------
+%	PROBLEM 1
+%----------------------------------------------------------------------------------------
+
+\pagebreak
+\section{A classe \SP}
+
+A classe \SP contém os problemas cuja solução é dada pela contagem de certificados de problemas em \NP.
+
+\subsection{Exemplos de problemas em \SP}
+
+\subsection{A classe \PP: $ \PP = \P \iff \SP = \FP $}
+
+\pagebreak
+\section{\SP-completude}
+
+\subsection{Classes com oráculo}
+\subsection{\prob{\#SAT} é \SPc}
+
+
+\pagebreak
+\section{Teorema de Valiant}
+
+Valiant mostrou que calcular o número de emparelhamentos perfeitos num grafo bipartido é \SP-completo. Isso é surpreendente pois o problema de decisão associado está em \P. 
+
+Para demonstrar esse teorema, primeiro lembramos da definição de permanente de uma matriz. Mostramos em seguida que, se considerarmos $A$ como uma matriz de adjacência de um digrafo $G$, calcular o permanente de $A$ é calcular o número de coberturas de ciclos de $G$. Finalmente, reduzimos o problema \#3SAT, que é \SPc, ao cálculo do número de coberturas de ciclos de um digrafo.
+
+\subsection{Permanente}
+
+\begin{definition} O permanente de uma matriz $A$ $n \times n$ é definido como: 
+\[
+\perm(A) = \sum\limits_{\sigma \in S_n} \left( \prod\limits_{i=1}a_{i,\sigma(i)} \right)
+\]
+
+\end{definition}
+
+Calcular o permanente de uma matriz $n \times n$ pode ser interpretado como encontrar o número de emparelhamentos perfeitos num grafo $(A, B)$-bipartido em que A e B têm $n$ vértices cada.
+
+\subsection{Cobertura por Ciclos}
+
+
+\subsection{Demonstração}
+
+\begin{theorem}[Valiant 1979] \prob{permanente} é \SP-completo.
+\end{theorem}
+
+\begin{proof}
+
+Queremos reduzir \prob{\#3SAT} a \prob{permanente}. Para isso, dada uma fórmula $\phi$ na 3-FNC, devemos construir um digrafo $ G $ cujas coberturas de ciclos correspondam a valorações das variáveis de $\phi$ que a satisfazem.
+
+Seja $\phi$ uma fórmula na forma normal conjuntiva com exatamente 3 variáveis por cláusula sobre as variáveis em $ X = \{x_1, \bar{x_1}, x_2, \bar{x_2} \dots, x_n, \bar{x_n} \} $. Assim, temos que
+\begin{align*}
+\phi = \bigwedge\limits_{i = 1}^{m}C_i = C_1 \land C_2 \land \dots \land C_m,
+\end{align*}
+onde cada cláusula $C_i$ é da forma $C_i = (y_{i1} \lor y_{i2} \lor y_{i3} )$, com cada $y_{ij}$ em $X$.
+
+Iremos considerar três dispositivos para construir o digrafo $ G $ relacionado. Cada dispositivo representa alguma característica ou restrição de uma fórmula na 3-FNC em um digrafo. Os dispositivos e suas descrições resumidas são dadas a seguir.
+
+\begin{description}
+  \item[Dispositivo de Valoração $D_v$ :] \hfill \\
+      Cada variável gera um dispositivo de valoração. Sua valoração está associada univocamente a como os dois vértices deste dispositivo são cobertos por uma cobertura de ciclos de $G$. A representação gráfica de $D_v$ para uma variável $x$ é:
+      
+      
+      
+  \item[Dispositivo de Cláusula:] \hfill \\
+    sdf
+  \item[Dispositivo de Valoração Exclusiva:] \hfill \\
+    dsdf
+\end{description}
+
+
+
+\end{proof}
+
+
+
+\subsection{Implicações}
+
+\pagebreak
+\section{Aproximações em \SP}
+
+\pagebreak
+\section{Teorema de Toda}
+
+
+%----------------------------------------------------------------------------------------
+\pagebreak
+\begin{thebibliography}{1}
+
+\bibitem{Val79a} Valiant, Leslie G. "The complexity of enumeration and reliability problems." SIAM Journal on Computing 8.3 (1979): 410-421.
+
+\bibitem{Val79b} Valiant, Leslie G. "The complexity of computing the permanent." Theoretical computer science 8.2 (1979): 189-201.
+
+\end{thebibliography}
+
+\end{document}
