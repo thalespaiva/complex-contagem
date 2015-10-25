@@ -231,16 +231,6 @@ $$
 
 Um esquema do digrafo para $ \phi $ é dado na Figura~\ref{fig:Doplus}. Nesta figura, os $D_\oplus$ representam os dispositivos de valoração exclusiva que devem ser acoplados às arestas contraditórias.
 
-Gostaríamos que $D_\oplus$ garantisse que exatamente uma das arestas contraditórias fosse atravessada. Porém, se isso fosse possível, esta redução seria parcimoniosa, o que implica $ \P = \NP$. Isso pois \prob{permanente} e \prob{3sat} teriam igual número de soluções. E como sabemos dizer se $ \perm(A) \geq 0 $ eficientemente, saberíamos dizer se uma instância de \prob{3sat} tem ao menos uma solução.
-
-Assim, usaremos um digrafo com pesos nas arestas para desconsiderar coberturas de ciclos de $G$ que usem valorações contraditórias.
-
-
-
-
-
-
-
 \begin{figure}
 \centering
 \begin{tikzpicture}[->,>=stealth',auto,node distance=2cm,
@@ -331,6 +321,53 @@ Assim, usaremos um digrafo com pesos nas arestas para desconsiderar coberturas d
 
 
 
+Gostaríamos que $D_\oplus$ garantisse que exatamente uma das arestas contraditórias fosse atravessada. Porém, se isso fosse possível, esta redução seria parcimoniosa, o que implica $ \P = \NP$. Isso pois \prob{permanente} e \prob{3sat} teriam igual número de soluções. E como sabemos dizer se $ \perm(A) \geq 0 $ eficientemente, saberíamos dizer se uma instância de \prob{3sat} tem ao menos uma solução.
+
+Assim, usaremos um digrafo com pesos nas arestas para desconsiderar coberturas de ciclos de $G$ que implicariam valorações contraditórias. O dispositivo resultante pode ser visto na Figura~\ref{fig:DoplusDef}.
+
+\begin{figure}
+\centering
+\begin{tikzpicture}[->,>=stealth',auto,node distance=4cm,
+  thick,main node/.style={circle,draw,font=\sffamily\Large\bfseries}]
+
+  \node[main node] (a) {a};
+  \node[main node] (b) [above right of=a] {b};
+  \node[main node] (d) [below right of=b] {d};
+  \node[main node] (c) [below right of=a] {c};
+
+  \path[every node/.style={font=\sffamily\small}]
+    (a) edge[bend left=10] node {} (b)
+    (a) edge[] node [pos=0.2, below]  {-1} (d)    
+    (a) edge[bend right=10] node {-1} (c)
+    
+    (b) edge[bend left=10] node {} (a)
+    (b) edge[loop above] node {-1} (b)
+    (b) edge[bend left=10] node {} (c)
+    (b) edge[bend left=10] node {} (d)
+
+    (c) edge[bend left=10] node {} (b)
+    (c) edge[bend left=10] node {2} (d)
+    (c) edge[loop below] node [above] {} (c)    
+    
+    (d) edge[bend left=10] node [above] {} (b)
+    (d) edge[bend left=10] node [above] {3} (c)    
+    ;
+
+  \node[main node] (u1) [above left of=a]{$u_1$};
+  \node[main node] (u2) [above right of=d] {$u_2$};
+  \node[main node] (v1) [below right of=d] {$v_1$};
+  \node[main node] (v2) [below left of=a] {$v_2$};
+
+  \path[every node/.style={font=\sffamily\small}]
+    (u1) edge[bend left=10] node {} (a)
+    (d) edge[bend left=10] node {} (u2)  
+    (v1) edge[bend left=10] node {} (d)
+    (a) edge[bend left=10] node {} (v2)  
+    ;  
+\end{tikzpicture}
+\caption{O dispositivo de valoração exclusiva $D_\oplus$ sobre arcos $(u_1, u_2)$ e $(v_1, v_2)$}
+\label{fig:DoplusDef}
+\end{figure}
 
 
 
