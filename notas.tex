@@ -48,12 +48,16 @@
 \renewcommand{\footrulewidth}{0pt} % Remove footer underlines
 \setlength{\headheight}{13.6pt} % Customize the height of the header
 
+\bibliographystyle{apalike}
+
 %\sectionfont{\bfseries\Large\raggedright}
 %\subsectionfont{\bfseries\Large\raggedright}
 
-%\numberwithin{equation}{section} % Number equations within sections (i.e. 1.1, 1.2, 2.1, 2.2 instead of 1, 2, 3, 4)
+\numberwithin{equation}{section} % Number equations within sections (i.e. 1.1, 1.2, 2.1, 2.2 instead of 1, 2, 3, 4)
 \numberwithin{figure}{section} % Number figures within sections (i.e. 1.1, 1.2, 2.1, 2.2 instead of 1, 2, 3, 4)
-%\numberwithin{table}{section} % Number tables within sections (i.e. 1.1, 1.2, 2.1, 2.2 instead of 1, 2, 3, 4)
+\numberwithin{table}{section} % Number tables within sections (i.e. 1.1, 1.2, 2.1, 2.2 instead of 1, 2, 3, 4)
+\numberwithin{definition}{section}
+\numberwithin{theorem}{section}
 
 %\setlength\parindent{0pt} % Removes all indentation from paragraphs - comment this line for an assignment with lots of text
 
@@ -73,12 +77,16 @@
 
 
 \newcommand{\perm}{perm}
+\newcommand{\words}{$\Sigma^*$\xspace}
+\newcommand{\mwords}{\Sigma^*\xspace}
 
 \renewcommand{\P}{\textbf{P}\xspace}
 \newcommand{\SP}{\textbf{\#P}\xspace}
 \newcommand{\NP}{\textbf{NP}\xspace}
 \newcommand{\FP}{\textbf{FP}\xspace}
 \newcommand{\PP}{\textbf{PP}\xspace}
+\newcommand{\gP}{\textbf{GapP}\xspace}
+\newcommand{\PSPACE}{\textbf{PSPACE}\xspace}
 
 \newcommand{\Pc}{\textbf{P-completo}}\xspace
 \newcommand{\SPc}{\textbf{\#P-completo}\xspace}
@@ -86,7 +94,7 @@
 \newcommand{\FPc}{\textbf{FP-completo}\xspace}
 \newcommand{\PPc}{\textbf{PP-completo}\xspace}
 
-\newcommand{\prob}[1]{\textsc{\textbf{#1}}}
+\newcommand{\prob}[1]{\text{\textsc{\textbf{#1}}}}
 
 
 \author{Thales A. B. Paiva \\ thalespaiva@gmail.com} % Your name
@@ -107,18 +115,80 @@
 %----------------------------------------------------------------------------------------
 
 \pagebreak
-\section{A classe \SP}
+\section{Definições Preliminares}
 
-A classe \SP contém os problemas cuja solução é dada pela contagem de certificados de problemas em \NP.
+Nesta seção, introduzimos algumas notações e definições. Foram extraídas principalmente de \cite{Fortnow97}.
 
-\subsection{Exemplos de problemas em \SP}
+Fixe $\Sigma = \{0, 1\}$ nosso alfabeto. Então $\Sigma^*$ é o conjunto de todas as palavras sobre esse alfabeto. $\Sigma^n$ é o conjunto de todas as strings de tamanho $n$ sobre esse alfabeto. 
 
-\subsection{A classe \PP: $ \PP = \P \iff \SP = \FP $}
+\begin{definition}[Máquina NP] Uma \textbf{Máquina NP} é uma máquina de Turing não determinística cujo tempo de execução é limitado por um polinômio no tamanho da entrada.
+\end{definition}
+
+\begin{definition}[$\bar{M}$] Seja $M$ uma máquina NP, denotamos por \textbf{$\bar{M}$} a máquina NP que simula $M$ invertendo a decisão de $M$ sobre uma dada entrada.
+\end{definition}
+
+\begin{definition} Seja $M$ uma máquina NP, denotamos por $\#M(x)$ o número de caminhos de aceitação para uma entrada $x$, ou o número de certificados de que $x$ pertence à linguagem reconhecida por $M$. Fica claro, então, que $\#\bar{M}(x)$ é o número de caminhos de rejeição para uma entrada $x$.
+\end{definition}
+
+\begin{definition} Seja $M$ uma máquina NP, chamamos de \textbf{Intervalo} (\textit{Gap}) de M(x), denotado por $\Delta M(x)$, a diferença entre o número de caminhos de aceitação e de rejeição para uma entrada $x$. Então
+\[
+\Delta M(x) = \#M(x) - \#\bar{M}(x)
+\]
+\end{definition}
+
+Note que, se o tempo de execução de $M$ é limitado pelo polinômio $|x|^k$ para cada entrada $x$, temos o tempo de execução de $\#M(x)$ e de $\Delta M(x)$ são limitados por $2^{|x|^k}$. Pois lembre que $2^{|x|^k}$ é o número de folhas de uma árvore de altura $|x|^k$.
+
+\begin{definition} A classe de problemas de função \FP contém as funções que são computáveis em tempo polinomial.
+\end{definition}
+
+Note que \FP é a generalização da classe de problemas de decisão \P.
+
+
+
+\pagebreak
+\section{Classes de contagem}
+
+Uma classe de contagem é um conjunto de problemas cujas soluções são dadas por funções sobre o número de certificados para problemas em NP. Nesta seção, definimos as duas principais classes de contagem, \SP e \gP. Jugamos que elas são as principais pois, podemos caracterizar outras classes de problemas a partir delas.
+
+\subsection{\SP}
+
+A classe \SP contém os problemas de função cujas soluções são dada pelo número de certificados de problemas em \NP. Em inglês, \SP é lido \textit{sharp}-P, mas para evitar anglicismos, sugerimos ler cerquilha-P ou número-P.
+
+Podemos definir \SP facilmente em termos de uma máquina NP $M$ e $\#M$.
+\begin{definition} A classe \SP contém as funções $f$ tais que existe uma máquina NP $M$ para que toda entrada $x \in \mwords$, temos $f(x) = \#M(x)$.
+\end{definition}
+
+Uma definição alternativa para \SP usando máquinas de Turing polinomiais, como  a de \cite{Arora09} é dada abaixo.
+\begin{definition}[De \cite{Arora09}] Uma função $f:\mwords \rightarrow \mathbb{N}$ está em \SP se existe um polinômio $p:\mathbb{N} \rightarrow \mathbb{N}$ e uma máquina de Turing polinomial $M$ tal que, para todo $x \in \mwords$, tem-se que
+$$
+f(x) = \left| \{ y \in \{0, 1\}^{p(|x|)}: M(x, y) = 1 \} \right|
+$$
+\end{definition}
+
+Como Arora aponta em \cite{Arora09}, a principal questão em aberto sobre \SP é se seus problemas podem ser resolvidos eficientemente ($ \SP \stackrel{?}{=} \FP $). É direto a definição que:
+\begin{itemize}
+  \item $ \SP = \FP \implies \NP = \P $.
+  \item $ \SP \subset \PSPACE $.
+  \item $ \P = \PSPACE \implies \P = \SP $.
+\end{itemize}
+
+Porém, não sabemos se $\NP = \P \stackrel{?}{\implies} \SP = \FP$.
+
+Nem todo problema em 
+
+\subsection{\gP}
+
+Agora, definimos a classe GapP, que generaliza #P
+A classe \gP consiste das 
+
+
+\subsection{Caracterização da classe \PP}
 
 \pagebreak
 \section{\SP-completude}
 
 \subsection{Classes com oráculo}
+\subsection{Reduções parcimoniosas}
 \subsection{\prob{\#SAT} é \SPc}
 
 
@@ -127,9 +197,30 @@ A classe \SP contém os problemas cuja solução é dada pela contagem de certif
 
 Valiant mostrou que calcular o número de emparelhamentos perfeitos num grafo bipartido é \SP-completo. Isso é surpreendente pois o problema de decisão associado está em \P. 
 
-Para demonstrar esse teorema, primeiro lembramos da definição de permanente de uma matriz. Mostramos em seguida que, se considerarmos $A$ como uma matriz de adjacência de um digrafo $G$, calcular o permanente de $A$ é calcular o número de coberturas de ciclos de $G$. Finalmente, reduzimos o problema \#3SAT, que é \SPc, ao cálculo do número de coberturas de ciclos de um digrafo.
+Para demonstrar esse teorema, primeiro lembramos que calcular o número de emparelhamentos perfeitos num grafo bipartido é o mesmo que encontrar o número de coberturas de ciclos de um grafo direcionado. Mostramos em seguida que, se considerarmos $A$ como uma matriz de adjacência de um digrafo $G$, calcular o permanente de $A$ é calcular o número de coberturas de ciclos de $G$. Finalmente, reduzimos o problema \#3SAT, que é \SPc, ao cálculo do número de coberturas de ciclos de um digrafo.
 
-\subsection{Permanente}
+\subsection{$ \prob{\#CycleCover} \equiv \prob{\#Matching}$}
+\begin{proof}
+Dado um grafo $G$, $(A, B)$-bipartido, queremos construir um digrafo $D$ cujo número de coberturas de ciclos seja igual ao número de emparelhamentos perfeitos de $G$. Suponha que $|A| = |B|$ e que
+$$
+A = \{a_1, a_2, \dots, a_n\}, \text{ e } \\
+B = \{b_1, b_2, \dots, b_n\}.
+$$
+
+Se, $|A| \neq |B|$, não haveria emparelhamento perfeito e o digrafo vazio resolveria o problema. Construa $D = (A, E)$ em que:
+$$
+E = \{ (a_i, a_j) : a_i \in A, b_j \in \text{Adj}_G(a_i) \}.
+$$
+
+Se $M = \{(u_1, v_2), (u_2, v_2), \dots, (u_n, v_n) \} \subset A \times B$ for um emparelhamento perfeito, temos a seguinte cobertura de ciclos:
+$$
+C = \bigcup\limits_{i = 1}^n \{\\{ \}}
+$$
+
+
+\end{proof}
+
+\subsection{$ \prob{Permanent} \equiv \prob{\#CycleCover} $}
 
 \begin{definition} O permanente de uma matriz $A$ $n \times n$ é definido como: 
 \[
@@ -139,8 +230,6 @@ Para demonstrar esse teorema, primeiro lembramos da definição de permanente de
 \end{definition}
 
 Calcular o permanente de uma matriz $n \times n$ pode ser interpretado como encontrar o número de emparelhamentos perfeitos num grafo $(A, B)$-bipartido em que A e B têm $n$ vértices cada.
-
-\subsection{Cobertura por Ciclos}
 
 \pagebreak
 \subsection{Demonstração}
@@ -321,14 +410,24 @@ Um esquema do digrafo para $ \phi $ é dado na Figura~\ref{fig:Doplus}. Nesta fi
 
 
 
-Gostaríamos que $D_\oplus$ garantisse que exatamente uma das arestas contraditórias fosse atravessada. Porém, se isso fosse possível, esta redução seria parcimoniosa, o que implica $ \P = \NP$. Isso pois \prob{permanente} e \prob{3sat} teriam igual número de soluções. E como sabemos dizer se $ \perm(A) \geq 0 $ eficientemente, saberíamos dizer se uma instância de \prob{3sat} tem ao menos uma solução.
+Gostaríamos que $D_\oplus$ garantisse que exatamente uma das arestas contraditórias fosse atravessada. Porém, se isso fosse possível, esta redução seria parcimoniosa, o que implicaria $ \P = \NP$. Pois como sabemos dizer se $ \perm(A) \geq 0 $ eficientemente, saberíamos dizer se uma instância de \prob{3sat} tem ao menos uma solução.
 
-Assim, usaremos um digrafo com pesos nas arestas para desconsiderar coberturas de ciclos de $G$ que implicariam valorações contraditórias. O dispositivo resultante pode ser visto na Figura~\ref{fig:DoplusDef}.
+Assim, usaremos um digrafo com pesos nas arestas para desconsiderar coberturas de ciclos de $G$ que implicariam valorações contraditórias. O dispositivo resultante pode ser visto na Figura~\ref{fig:DoplusDef}. Sua matriz de adjacências $ M_{D_\oplus} $ é dada a seguir.
+
+\begin{align*}
+M_{D_\oplus} = 
+\begin{bmatrix}
+0 &  1 & -1 & -1  \\
+1 & -1 &  1 &  1  \\
+0 &  1 &  1 &  2  \\
+0 &  1 &  3 &  0  \\
+\end{bmatrix}
+\end{align*}
 
 \begin{figure}
 \centering
-\begin{tikzpicture}[->,>=stealth',auto,node distance=4cm,
-  thick,main node/.style={circle,draw,font=\sffamily\Large\bfseries}]
+\begin{tikzpicture}[->,>=stealth',auto,node distance=2.5cm,
+  thick,main node/.style={circle,draw,font=\sffamily\small\bfseries}]
 
   \node[main node] (a) {a};
   \node[main node] (b) [above right of=a] {b};
@@ -338,7 +437,7 @@ Assim, usaremos um digrafo com pesos nas arestas para desconsiderar coberturas d
   \path[every node/.style={font=\sffamily\small}]
     (a) edge[bend left=10] node {} (b)
     (a) edge[] node [pos=0.2, below]  {-1} (d)    
-    (a) edge[bend right=10] node {-1} (c)
+    (a) edge[bend right=10] node [below] {-1} (c)
     
     (b) edge[bend left=10] node {} (a)
     (b) edge[loop above] node {-1} (b)
@@ -346,11 +445,11 @@ Assim, usaremos um digrafo com pesos nas arestas para desconsiderar coberturas d
     (b) edge[bend left=10] node {} (d)
 
     (c) edge[bend left=10] node {} (b)
-    (c) edge[bend left=10] node {2} (d)
+    (c) edge[bend left=10] node [above] {2} (d)
     (c) edge[loop below] node [above] {} (c)    
     
     (d) edge[bend left=10] node [above] {} (b)
-    (d) edge[bend left=10] node [above] {3} (c)    
+    (d) edge[bend left=10] node [below] {3} (c)    
     ;
 
   \node[main node] (u1) [above left of=a]{$u_1$};
@@ -368,6 +467,7 @@ Assim, usaremos um digrafo com pesos nas arestas para desconsiderar coberturas d
 \caption{O dispositivo de valoração exclusiva $D_\oplus$ sobre arcos $(u_1, u_2)$ e $(v_1, v_2)$}
 \label{fig:DoplusDef}
 \end{figure}
+\FloatBarrier
 
 
 
@@ -381,6 +481,7 @@ Assim, usaremos um digrafo com pesos nas arestas para desconsiderar coberturas d
 
 
 \end{proof}
+
 
 
 
@@ -400,6 +501,10 @@ Assim, usaremos um digrafo com pesos nas arestas para desconsiderar coberturas d
 \bibitem{Val79a} Valiant, Leslie G. "The complexity of enumeration and reliability problems." SIAM Journal on Computing 8.3 (1979): 410-421.
 
 \bibitem{Val79b} Valiant, Leslie G. "The complexity of computing the permanent." Theoretical computer science 8.2 (1979): 189-201.
+
+\bibitem{Arora09} Arora, Sanjeev, and Boaz Barak. Computational complexity: a modern approach. Cambridge University Press, 2009.
+
+\bibitem{Fortnow97} Fortnow, Lance. "Counting complexity." Complexity theory retrospective II (1997): 81-107.
 
 \end{thebibliography}
 
