@@ -27,9 +27,7 @@
 \usepackage{indentfirst}
 \usepackage{placeins}
 
-\newtheorem{theorem}{Teorema}
-\newtheorem{definition}{Definição}
- 
+
 \usepackage{tikz}
 \usetikzlibrary{arrows}
 \usetikzlibrary{positioning}
@@ -38,9 +36,9 @@
 %\usepackage{sectsty} % Allows customizing section commands
 %\allsectionsfont{\centering \normalfont\scshape} % Make all sections centered, the default font and small caps
 
-\usepackage{fancyhdr} % Custom headers and footers
-\pagestyle{fancyplain} % Makes all pages in the document conform to the custom headers and footers
-\fancyhead{} % No page header - if you want one, create it in the same way as the footers below
+\usepackage{fancyhdr}
+\pagestyle{fancyplain}
+%\fancyhead{}
 \fancyfoot[L]{} % Empty left footer
 \fancyfoot[C]{} % Empty center footer
 \fancyfoot[R]{\thepage} % Page numbering for right footer
@@ -53,11 +51,18 @@
 %\sectionfont{\bfseries\Large\raggedright}
 %\subsectionfont{\bfseries\Large\raggedright}
 
-\numberwithin{equation}{section} % Number equations within sections (i.e. 1.1, 1.2, 2.1, 2.2 instead of 1, 2, 3, 4)
-\numberwithin{figure}{section} % Number figures within sections (i.e. 1.1, 1.2, 2.1, 2.2 instead of 1, 2, 3, 4)
-\numberwithin{table}{section} % Number tables within sections (i.e. 1.1, 1.2, 2.1, 2.2 instead of 1, 2, 3, 4)
-\numberwithin{definition}{section}
-\numberwithin{theorem}{section}
+\newtheorem{theorem}{Teorema}
+\newtheorem{definition}{Definição}
+\newtheorem{property}{Propriedade}
+\newtheorem{proposition}{Proposição}
+
+\numberwithin{equation}{subsection}
+\numberwithin{figure}{subsection}
+\numberwithin{table}{subsection}
+\numberwithin{definition}{subsection}
+\numberwithin{theorem}{subsection}
+\numberwithin{property}{subsection}
+\numberwithin{proposition}{subsection}
 
 %\setlength\parindent{0pt} % Removes all indentation from paragraphs - comment this line for an assignment with lots of text
 
@@ -71,8 +76,8 @@
 \normalfont \normalsize 
 \textsc{DCC-IME-USP} \\ [25pt] % Your university, school and/or department name(s)
 %\horrule{0.5pt} \\[0.4cm] % Thin top horizontal rule
-\huge Complexidade de Contagem \\ % The assignment title
-%\horrule{2pt} \\[0.5cm] % Thick bottom horizontal rule
+\huge Complexidade de Contagem \\ Parte 1 % The assignment title
+%\horrule{1pt} \\[0.5cm] % Thick bottom horizontal rule
 }
 
 
@@ -81,6 +86,9 @@
 \newcommand{\mwords}{\Sigma^*\xspace}
 
 \renewcommand{\P}{\textbf{P}\xspace}
+\newcommand{\UP}{\textbf{UP}\xspace}
+\newcommand{\BPP}{\textbf{BPP}\xspace}
+\newcommand{\parP}{\textbf{$\oplus$P}\xspace}
 \newcommand{\SP}{\textbf{\#P}\xspace}
 \newcommand{\NP}{\textbf{NP}\xspace}
 \newcommand{\FP}{\textbf{FP}\xspace}
@@ -96,17 +104,21 @@
 
 \newcommand{\prob}[1]{\text{\textsc{\textbf{#1}}}}
 
+\newcommand{\npmach}{máquina-NP\xspace}
+
+\newcommand{\del}[1]{\Delta #1}
+
+\renewcommand{\bar}[1]{\overline{#1}}
 
 \author{Thales A. B. Paiva \\ thalespaiva@gmail.com} % Your name
-
 \date{\normalsize\today} % Today's date or a custom date
-
-
 
 \begin{document}
 
 
 \maketitle % Print the title
+\horrule{1pt} \\[0.5cm] % Thick bottom horizontal rule
+
 \tableofcontents
 
 
@@ -121,41 +133,39 @@ Nesta seção, introduzimos algumas notações e definições. Foram extraídas 
 
 Fixe $\Sigma = \{0, 1\}$ nosso alfabeto. Então $\Sigma^*$ é o conjunto de todas as palavras sobre esse alfabeto. $\Sigma^n$ é o conjunto de todas as strings de tamanho $n$ sobre esse alfabeto. 
 
-\begin{definition}[Máquina NP] Uma \textbf{Máquina NP} é uma máquina de Turing não determinística cujo tempo de execução é limitado por um polinômio no tamanho da entrada.
+\begin{definition}[\npmach] Uma \textbf{Máquina NP} é uma máquina de Turing não determinística cujo tempo de execução é limitado por um polinômio no tamanho da entrada.
 \end{definition}
 
-\begin{definition}[$\bar{M}$] Seja $M$ uma máquina NP, denotamos por \textbf{$\bar{M}$} a máquina NP que simula $M$ invertendo a decisão de $M$ sobre uma dada entrada.
+\begin{definition}[$\bar{M}$] Seja $M$ uma \npmach, denotamos por \textbf{$\bar{M}$} a \npmach que simula $M$ invertendo a decisão de $M$ sobre uma dada entrada.
 \end{definition}
 
-\begin{definition} Seja $M$ uma máquina NP, denotamos por $\#M(x)$ o número de caminhos de aceitação para uma entrada $x$, ou o número de certificados de que $x$ pertence à linguagem reconhecida por $M$. Fica claro, então, que $\#\bar{M}(x)$ é o número de caminhos de rejeição para uma entrada $x$.
+\begin{definition} Seja $M$ uma \npmach, denotamos por $\#M(x)$ o número de caminhos de aceitação para uma entrada $x$, ou o número de certificados de que $x$ pertence à linguagem reconhecida por $M$. Fica claro, então, que $\#\bar{M}(x)$ é o número de caminhos de rejeição para uma entrada $x$.
 \end{definition}
 
-\begin{definition} Seja $M$ uma máquina NP, chamamos de \textbf{Intervalo} (\textit{Gap}) de M(x), denotado por $\Delta M(x)$, a diferença entre o número de caminhos de aceitação e de rejeição para uma entrada $x$. Então
+\begin{definition} Seja $M$ uma \npmach, chamamos de \textbf{Intervalo} (\textit{Gap}) de M(x), denotado por $\Delta M(x)$, a diferença entre o número de caminhos de aceitação e de rejeição para uma entrada $x$. Então
 \[
 \Delta M(x) = \#M(x) - \#\bar{M}(x)
 \]
 \end{definition}
 
-Note que, se o tempo de execução de $M$ é limitado pelo polinômio $|x|^k$ para cada entrada $x$, temos que os valores de $\#M(x)$ e de $\Delta M(x)$ são limitados por $2^{|x|^k}$. Basta lembrar que $2^{|x|^k}$ é o número de folhas de uma árvore de altura $|x|^k$.
+Note que, se o tempo de execução de $M$ é limitado pelo polinômio $|x|^k$ para cada entrada $x$, temos que os valores de $\#M(x)$ e de $\Delta M(x)$ são limitados por $2^{|x|^k}$. Pois lembre que $2^{|x|^k}$ é o número de folhas de uma árvore de altura $|x|^k$.
 
-\begin{definition} A classe de problemas de função \FP contém as funções que são computáveis em tempo polinomial.
+\begin{definition} A classe de problemas de função \FP contém as funções $f: \text{\words} \rightarrow \mathbb{N}$ que são computáveis em tempo polinomial.
 \end{definition}
 
-Note que \FP é a generalização da classe de problemas de decisão \P.
-
-
+Note que \FP é generalização da classe de problemas de decisão \P.
 
 \pagebreak
 \section{Classes de contagem}
 
-Uma classe de contagem é um conjunto de problemas cujas soluções são dadas por funções sobre o número de certificados para problemas em NP. Nesta seção, definimos as duas principais classes de contagem, \SP e \gP. Jugamos que elas são as principais pois, podemos caracterizar outras classes de problemas a partir delas.
+Uma classe de contagem é um conjunto de soluções de problemas cuja formulação é feita sobre o número de certificados para problemas em NP. Nesta seção, definimos as duas principais classes de contagem, \SP e \gP. Jugamos que elas são as principais pois, podemos caracterizar outras classes de problemas a partir delas.
 
-\subsection{\SP}
+\subsection{A classe \SP}
 
-A classe \SP contém os problemas de função cujas soluções são dada pelo número de certificados de problemas em \NP. Em inglês, \SP é lido \textit{sharp}-P, mas para evitar anglicismos, sugerimos ler cerquilha-P ou número-P.
+A classe \SP contém os as funções cujas imagens são dadas pelo número de certificados de problemas em \NP. %Em inglês, \SP é lido \textit{sharp}-P, mas para evitar anglicismos, sugerimos ler cerquilha-P ou número-P.
 
-Podemos definir \SP facilmente em termos de uma máquina NP $M$ e $\#M$.
-\begin{definition} A classe \SP contém as funções $f$ tais que existe uma máquina NP $M$ para que toda entrada $x \in \mwords$, temos $f(x) = \#M(x)$.
+Podemos definir \SP facilmente em termos de uma \npmach $M$ e $\#M$.
+\begin{definition} A classe \SP contém as funções $f$ tais que existe uma \npmach $M$ para que toda entrada $x$ em $\mwords$, temos $f(x) = \#M(x)$.
 \end{definition}
 
 Uma definição alternativa para \SP usando máquinas de Turing polinomiais, como  a de \cite{Arora09} é dada abaixo.
@@ -167,79 +177,219 @@ $$
 
 Como Arora aponta em \cite{Arora09}, a principal questão em aberto sobre \SP é se seus problemas podem ser resolvidos eficientemente ($ \SP \stackrel{?}{=} \FP $). É direto a definição que:
 \begin{itemize}
-  \item $ \SP = \FP \implies \NP = \P $.
+  \item $ \SP \subset \FP \implies \NP = \P $.
   \item $ \SP \subset \PSPACE $.
+  \item $ \SP \not\supset \FP $ (sob a nossa definição de \FP).
   \item $ \P = \PSPACE \implies \P = \SP $.
 \end{itemize}
 
 Porém, não sabemos se $\NP = \P \stackrel{?}{\implies} \SP = \FP$.
 
-Nem todo problema em 
+Duas propriedades esperadas sobre $\SP$ são o fechamento sob adição e sob multiplicação.
+\begin{property}
+\SP é fechada sob a adição. Ou seja, para todas funções $f_1$ e $f_2$ em \SP, existe uma função $f$ também em \SP tal que, para todo $x$ em \words, temos que
+\[
+f(x) = f_1(x) + f_2(x)
+\]
+\end{property}
+\begin{proof}
+Tome $M_1$ e $M_2$ máquinas NP tais que
+$$
+\#M_1(x) = f_1(x) \text{ e } \#M_2(x) = f_2(x)\text{, para todo $x$ em \words.} 
+$$
 
-\subsection{\gP}
+Construa uma \npmach $M$ cuja primeira ramificação seja simular a máquina $M_1$ ou a máquina $M_2$. Claro que 
+\begin{align*}
+\#M(x) & = \#M_1(x) + \#M_2(x) \\
+       & = f_1(x) + f_2(x)     \\
+       & = f(x).
+\end{align*}
+\end{proof}
 
-Agora, definimos a classe GapP, que generaliza \#P
-A classe \gP consiste das 
+\begin{property}
+\SP é fechada sob a multiplicação.
+\end{property}
+\begin{proof}
+Segue da propriedade anterior.
+\end{proof}
 
+Apesar dessas propriedades, é óbvio que \SP não é fechada sob a subtração. Para resolver esse problema e facilitar o estudo de \SP, introduzimos a classe \gP.
 
-\subsection{Caracterização da classe \PP}
+\subsection{A classe \gP}
+
+A classe GapP, definida por Fenner em \cite{Fenner94}, generaliza a classe \SP sem perda de poder computacional. Sua definição, analoga à de \SP para $\Delta M$, é dada a seguir.
+
+\begin{definition}
+A classe \gP contém as funções $f$ tais que existe uma \npmach $M$ para que toda entrada x em \words, temos $f(x) = \Delta M(x)$.
+\end{definition}
+
+É fácil ver que \gP é fechado sob negação.
+
+\begin{property}
+Se $f \in \gP$, então $ -f \in \gP$. 
+\end{property}
+\begin{proof}
+Tome $M$ uma \npmach tal que $f(x) = \Delta M(x)$, para todo $x$ em \words. Então $-f(x) = \Delta \bar{M}(x)$.
+\end{proof}
+
+%Na próxima seção, estudamos as relações entre \SP e \gP. Em particular, mostramos que \gP é o fechamento de %%\SP sob a subtração e que ambas tem mesmo poder computacional.
+
+%\subsection{Relações entre \SP e \gP}
+
+\gP é uma classe ao menos tão poderosa quando a classe \SP. Ou seja, que toda função em \SP está em \gP.
+
+\begin{theorem}
+Se $f \in \SP$, então $f \in \gP$.
+\end{theorem}
+\begin{proof}
+Seja $M$ uma \npmach tal que, para todo $x$ em \SP, $f(x) = \#M(x)$. Queremos construir uma \npmach $N$ tal que $f(x) = \del{N(x)}$. Considere a seguinte construção de uma \npmach $N$:
+\begin{itemize}
+	\item $N$ simula $M$ com entrada $x$ em \words.
+	\item Se $M$ aceita $x$, então $N$ aceita $x$.
+	\item Se $M$ rejeita $x$, então $N$ ramifica em duas configurações, uma de aceitação, outra de rejeição.
+\end{itemize}
+
+Temos então que:
+\begin{align*}
+\#N(x) 	     &= \#M(x) + \#\bar{M}(x) \text{, e que } \\
+\#\bar{N}(x) &= \#\bar{M}(x).
+\end{align*} 
+Assim:
+\begin{align*}
+\del{N(x)}  &= \#N(x) - \#\bar{N}(x) \\
+		 	&= (\#M(x) + \#\bar{M}(x)) - (\#\bar{M}) \\
+		 	&= \#M(x) \\
+		 	&= f(x).
+\end{align*}
+\end{proof}
+
+%\begin{theorem}
+%Toda função $f$ em \FP está em \gP. Em particular, se $f(x) \geq 0$ para todo $x$ em \words, então $f$ está em %\SP.
+%\end{theorem}
+%\begin{proof}
+%Seja $f$ uma função em \FP. Construa uma \npmach $M$ com a descrição a seguir.
+%\begin{itemize}
+%	\item $M$ 
+%\end{itemize}
+
+%\end{proof}
+
+%\begin{theorem}
+%Para todas as funções $f$, as seguintes afirmações são equivalentes:
+%\begin{enumerate}
+%	\item $ f \in \gP $.
+%	\item $ f $ é a diferença de duas funções em \SP.
+%	\item $ f $ é a diferença de uma função em \SP e outra em \FP.
+%	\item $ f $ é a diferença entre uma função em \FP e outra em \SP.
+%\end{enumerate}
+
+%\end{theorem}
+
+Mais à frente, veremos que \gP é exatamente o fechamento de \SP sob a subtração e que \SP e \gP têm poder de computação equivalente.
+
+\subsection{Algumas classes de contagem}
+
+Agora podemos definir um pouco melhor o termo \textbf{classe de contagem} como uma classe de funções que têm uma caracterização simples em termo de \SP e \gP, (como Fortnow em \cite{Fortnow97}).
+
+É útil caracterizar classes em termos de \gP e de \SP para que se possa usar as propriedades de fechamento dessas classes, que veremos em próximas seções. Algumas caracterizações são:
+
+\begin{definition} A classe \NP contém as linguagens L tais que existe uma função $f$ em \SP para que todo $x$ em \words:
+\begin{itemize}
+  \item Se $x \in L$, então $f(x) > 0$.
+  \item Se $x \notin L$, então $f(x) = 0$.
+\end{itemize}
+\end{definition}
+
+Essa caracterização não é muito útil mas é ilustrativa. Uma outra classe com caracterização simples é a \UP (\textit{Unique P}).
+
+\begin{definition}
+A classe \UP contém todas as linguagens L tais que existe uma função $f$ em \SP para que todo x em \words:
+\begin{itemize}
+  \item Se $x \in L$, então $f(x) = 1$.
+  \item Se $x \notin L$, então $f(x) = 0$.
+\end{itemize}
+\end{definition}
+
+\begin{definition}
+A classe \parP contém todas as linguagens L tais que existe uma função $f$ em \SP para que todo x em \words:
+\begin{itemize}
+  \item Se $x \in L$, então $f(x)$ é par.
+  \item Se $x \notin L$, então $f(x)$ é ímpar.
+\end{itemize}
+\end{definition}
+
+Uma caracterização bem útil é a da classe \PP. Definida por Gill, como a classe de problemas de decisão tais que existe uma máquina de Turing polinomial probabilística tal que, $x$ pertence a \PP se e somente se $\mathbb{P}(M(x) = 1) > \frac{1}{2}$. \PP é mais forte do que \BPP, inclusive $\BPP \subset \PP$, pois o quão próximo de $\frac{1}{2}$ estão as probabilidades de erro e acerto podem depender da entrada. Isso faria com que o algoritmo devesse ser rodado por tempo exponencial para aumentar a probabilidade de acerto, e não por tempo polinomial através do limite de Chernoff.
+
+Essa classe é particularmente importante no estudo de classes de contagem, pois veremos mais para frente que \PP é tão poderosa quanto \SP.
+
+\begin{definition}
+A classe \PP contém todas as linguagens L tais que existe uma função $f$ em \gP para que todo x em \words:
+\begin{itemize}
+  \item Se $x \in L$, então $f(x) > 0$.
+  \item Se $x \notin L$, então $f(x) \leq 0$.
+\end{itemize}
+\end{definition}
+  
 
 \pagebreak
 \section{\SP-completude}
 
-\subsection{Classes com oráculo}
-\subsection{Reduções parcimoniosas}
-\subsection{\prob{\#SAT} é \SPc}
+Nesta seção curta, definimos \SP-completude e mostramos alguns exemplos de funções \SP-completas. 
 
+\subsection{Definição}
+
+UMa função de \SP é \SP-completa se um algoritmo polinomial para $f$ implica que $\SP \subset FP$. Para a definição formal, podemos usar classes com oráculos.
+
+Lembre que uma classe $FP$ com oráculo para uma função $f$, denotado por $FP^f$ é o conjunto de funções eficientemente computáveis dado que se sabe calcular o valor de $f$ em um passo computacional.
+
+\begin{definition}
+Uma função $f$ de \SP é \SP-completa se cada $g$ em \SP pertence a $\FP^f$.
+\end{definition}
+
+Problemas \NP-completos costumam ter formulações de contagem \SP-completas. Exemplos são \prob{\#Sat}, \prob{\#3Sat}, \prob{\#Clique}, e \prob{\#Ham}.
+
+\subsection{Reduções parcimoniosas}
+
+Em complexidade de contagem estamos interessados em reduções de $A$ para $B$ que preservem o número de soluções. 
+
+\begin{definition}
+Dadas duas linguagens $A$ e $B$ de \NP. Uma redução parcimoniosa é uma redução $h: A \rightarrow B$ tal que $h$ é calculada em tempo polinomial e o número de certificados para $x \in A$ é o mesmo de $f(x) \in B$.
+\end{definition}
+
+Como pode ser difícil (ou impossível) encontrar reduções parcimoniosas, podemos relaxar um pouco o tipo de redução que precisamos. Basta que, para nossa redução de $A$ para $B$, seja possível reconstruir o número de soluções de $A$ através do número de soluções para $B$.
+
+\begin{definition}[Erik Demaine]
+Dadas duas linguagens $A$ e $B$ de \NP. Uma redução c-moniosa é uma redução $h: A \rightarrow B$ tal que $h$ é calculada em tempo polinomial e o número de certificados para $x \in A$ é o mesmo de $f(x) \in B$ multiplicado por um inteiro $c$.
+\end{definition}
+
+\subsection{\prob{\#SAT} é \SPc}
+\begin{proof}
+Basta ver que a redução de Cook-Levin para mostrar que \prob{Sat} é \NP-completa é, em particular, uma redução de Levin. Esta redução consiste de três funções $f, g, h$ de uma linguagem $L \in \NP$ para \prob{Sat} tal que:
+\begin{enumerate}
+  \item $x \in L \Leftrightarrow f(x) \in \prob{Sat}$.
+  \item $y$ é certificado de que $x \in L$ $\Leftrightarrow$ $g(y)$ é certificado de que $f(x) \in \prob{Sat}$.
+  \item $h(z)$ é certificado de que $x \in L$ $\Leftrightarrow$ $z$ é certificado de que $f(x) \in \prob{Sat}$.
+\end{enumerate}
+
+Então, o número de certificados para cada $x \in L$, é o mesmo de certificados para $ f(x) \in \prob{Sat} $.
+
+\end{proof}
+
+Note que isso implica que \prob{\#3Sat} é \SP-completa, pois a redução de \prob{Sat} para \prob{3Sat} também é parcimoniosa. Usaremos esse fato para provar o Teorema de Valiant.
 
 \pagebreak
 \section{Teorema de Valiant}
 
 Valiant mostrou que calcular o número de emparelhamentos perfeitos num grafo bipartido é \SP-completo. Isso é surpreendente pois o problema de decisão associado está em \P. 
 
-Para demonstrar esse teorema, primeiro lembramos que calcular o número de emparelhamentos perfeitos num grafo bipartido é o mesmo que encontrar o número de coberturas de ciclos de um grafo direcionado. Mostramos em seguida que, se considerarmos $A$ como uma matriz de adjacência de um digrafo $G$, calcular o permanente de $A$ é calcular o número de coberturas de ciclos de $G$. Finalmente, reduzimos o problema \#3SAT, que é \SPc, ao cálculo do número de coberturas de ciclos de um digrafo.
-
-\subsection{$ \prob{\#CycleCover} \equiv \prob{\#Matching}$}
-\begin{proof}
-Dado um grafo $G$, $(A, B)$-bipartido, queremos construir um digrafo $D$ cujo número de coberturas de ciclos seja igual ao número de emparelhamentos perfeitos de $G$. Suponha que $|A| = |B|$ e que
-$$
-A = \{a_1, a_2, \dots, a_n\}, \text{ e } \\
-B = \{b_1, b_2, \dots, b_n\}.
-$$
-
-Se, $|A| \neq |B|$, não haveria emparelhamento perfeito e o digrafo vazio resolveria o problema. Construa $D = (A, E)$ em que:
-$$
-E = \{ (a_i, a_j) : a_i \in A, b_j \in \text{Adj}_G(a_i) \}.
-$$
-
-Se $M = \{(u_1, v_2), (u_2, v_2), \dots, (u_n, v_n) \} \subset A \times B$ for um emparelhamento perfeito, temos a seguinte cobertura de ciclos:
-$$
-C = \bigcup\limits_{i = 1}^n \{\\{ \}}
-$$
-
-
-\end{proof}
-
-\subsection{$ \prob{Permanent} \equiv \prob{\#CycleCover} $}
-
-\begin{definition} O permanente de uma matriz $A$ $n \times n$ é definido como: 
-\[
-\perm(A) = \sum\limits_{\sigma \in S_n} \left( \prod\limits_{i=1}a_{i,\sigma(i)} \right)
-\]
-
-\end{definition}
-
-Calcular o permanente de uma matriz $n \times n$ pode ser interpretado como encontrar o número de emparelhamentos perfeitos num grafo $(A, B)$-bipartido em que A e B têm $n$ vértices cada.
-
-\pagebreak
-\subsection{Demonstração}
+Para demonstrar esse teorema, primeiro lembramos que calcular o número de emparelhamentos perfeitos num grafo bipartido é o mesmo que encontrar o número de coberturas por ciclos de um grafo direcionado. Ainda, se considerarmos $A$ como uma matriz de adjacência de um digrafo $G$, calcular o permanente de $A$ é calcular o número de coberturas por ciclos de $G$. Finalmente, reduzimos o problema \#3SAT, que é \SPc, ao cálculo do número de coberturas por ciclos de um digrafo.
 
 \begin{theorem}[Valiant 1979] \prob{permanente} é \SP-completo.
 \end{theorem}
 
 \begin{proof}
 
-Queremos reduzir \prob{\#3sat} a \prob{permanente}. Para isso, dada uma fórmula $\phi$ na 3-FNC, devemos construir um digrafo $ G $ cujas coberturas de ciclos correspondam a valorações das variáveis de $\phi$ que a satisfazem.
+Queremos reduzir \prob{\#3sat} a \prob{permanente}. Para isso, dada uma fórmula $\phi$ na 3-FNC, devemos construir um digrafo $ G $ cujas coberturas por ciclos correspondam a valorações das variáveis de $\phi$ que a satisfazem.
 
 Seja $\phi$ uma fórmula na forma normal conjuntiva com exatamente 3 variáveis por cláusula sobre as variáveis em $ X = \{x_1, \bar{x_1}, x_2, \bar{x_2} \dots, x_n, \bar{x_n} \} $. Assim, temos que
 \begin{align*}
@@ -251,7 +401,7 @@ Iremos considerar três dispositivos para construir o digrafo $ G $ relacionado.
 
 \paragraph{Dispositivo de Valoração $D_V$ :} \hfill \\
 
-      Cada variável gera um dispositivo de valoração. Sua valoração está associada univocamente a como os dois vértices deste dispositivo são cobertos por uma cobertura de ciclos de $G$. A representação gráfica de $D_v$ para uma variável $x$ pode ser vista na Figura~\ref{fig:Dv}, em que $0$ e $1$ representam respectivamente os valores verdadeiro e falso. Dois dos arcos estão pontilhados pois poderão ser acoplados a outros dispositivos na construção de $G$.
+      Cada variável gera um dispositivo de valoração. Sua valoração está associada univocamente a como os dois vértices deste dispositivo são cobertos por uma cobertura por ciclos de $G$. A representação gráfica de $D_v$ para uma variável $x$ pode ser vista na Figura~\ref{fig:Dv}, em que $0$ e $1$ representam respectivamente os valores verdadeiro e falso. Dois dos arcos estão pontilhados pois poderão ser acoplados a outros dispositivos na construção de $G$.
       
 \FloatBarrier
 \begin{figure}
@@ -275,7 +425,7 @@ Iremos considerar três dispositivos para construir o digrafo $ G $ relacionado.
 
 Semelhante ao dispositivo anterior, cada cláusula gera um dispositivo de cláusula. Este dispositivo captura a restrição de que ao menos uma das expressões componentes de uma cláusula deve ser verdadeiro. Assim, para uma cláusula $C$, cada ciclo em seu dispositivo associado corresponde a uma valoração que faz $C$ ser satisfeita.
 
-Nesse dispositivo, três arcos externos representam as valorações que fazem cada expressão de uma cláusula $C = (y_1 \lor y_2 \lor y_3)$ ser falsa. Podemos ver na Figura~\ref{fig:Dc} que não pode haver cobertura de ciclos que percorra os três arcos externos. Também vemos que para qualquer aresta externa ou par de arestas externas, há apenas uma cobertura de ciclos do dispositivo. Aqui, os arcos externos estão tracejados pois serão conectados a dispositivos de valoração através de dispositivos de valoração exclusiva.
+Nesse dispositivo, três arcos externos representam as valorações que fazem cada expressão de uma cláusula $C = (y_1 \lor y_2 \lor y_3)$ ser falsa. Podemos ver na Figura~\ref{fig:Dc} que não pode haver cobertura por ciclos que percorra os três arcos externos. Também vemos que para qualquer aresta externa ou par de arestas externas, há apenas uma cobertura por ciclos do dispositivo. Aqui, os arcos externos estão tracejados pois serão conectados a dispositivos de valoração através de dispositivos de valoração exclusiva.
 
 \begin{figure}
 \centering
@@ -310,7 +460,7 @@ Nesse dispositivo, três arcos externos representam as valorações que fazem ca
 
 \paragraph{Dispositivo de Valoração Exclusiva $D_\oplus$:} \hfill \\
 
-Este dispositivo é o que garante a consistência entre os dispositivos de valoração e de cláusulas. Queremos garantir que uma cobertura de ciclos de $G$ não possua arestas que se contradizem. Ou seja, garantir que as cobertura dos dispositivos de valoração para cada variável de uma cláusula $C$ não entrem em conflito com as coberturas de $C$.
+Este dispositivo é o que garante a consistência entre os dispositivos de valoração e de cláusulas. Queremos garantir que uma cobertura por ciclos de $G$ não possua arestas que se contradizem. Ou seja, garantir que as cobertura dos dispositivos de valoração para cada variável de uma cláusula $C$ não entrem em conflito com as coberturas de $C$.
 
 Como exemplo, suponha que a fórmula $\phi$ seja composta por apenas duas cláusulas e dada por
 
@@ -441,8 +591,6 @@ Nossa construção usa três dispositivos $D_\oplus$ por cláusula, totalizando 
 \implies \#\phi &= \frac{\perm(G)}{4^{3m}}.
 \end{align*}
  
-
-
 \begin{figure}
 \centering
 \begin{tikzpicture}[->,>=stealth',auto,node distance=2.5cm,
@@ -487,16 +635,80 @@ Nossa construção usa três dispositivos $D_\oplus$ por cláusula, totalizando 
 \label{fig:DoplusDef}
 \end{figure}
 \FloatBarrier
+
+Como não estamos mais usando apenas entradas 0 e 1 na matriz de $G$, provamos que a generalização de \prob{Permanent} é \SP-completa. Então, precisamos reduzir esta solução ao problema inicial.
+
+Para simular arestas de peso 2 e 3, use os dispositivos da Figura~\ref{fig:Doplus23}
+\begin{figure}
+\centering
+\begin{tikzpicture}[->,>=stealth',auto,node distance=3cm,
+  thick,main node/.style={circle,draw,font=\sffamily\small\bfseries}]
+
+  \node[main node] (a) { };
+  \node[main node] (x) [below right=1.5 and 0.3 of a] { };
+  \node[main node] (b) [below left=1.5 and 0.3 of x] { };
+
+  \path[every node/.style={font=\sffamily\small}]
+    (b) edge[bend left=20] node {} (a)
+    (b) edge[bend right=10] node {} (x)
+    (x) edge[bend right=10] node {} (a)
+    (x) edge[loop right] node {} (x)
+    ;  
+
+  \node[main node] (d) [right of=a] { };
+  \node[main node] (y) [below right=1.5 and 0.3 of d] { };
+  \node[main node] (z) [right=0.7 of y] { };
+  \node[main node] (c) [below left=1.5 and 0.3 of y] { };
+
+  \path[every node/.style={font=\sffamily\small}]
+    (c) edge[bend left=20] node {} (d)
+    (c) edge[bend right=10] node {} (y)
+    (y) edge[bend right=10] node {} (d)
+    (y) edge[loop right] node {} (x)
+    (c) edge[bend right=30] node {} (z)
+    (z) edge[bend right=30] node {} (d)
+    (z) edge[loop right] node {} (z)
+    ;  
+
+\end{tikzpicture}
+\caption{Dispositivo para substituir arestas de peso 2 e 3}
+\label{fig:Doplus23}
+\end{figure}
+\FloatBarrier
+
+
+\pagebreak
+
+Então resta apenas lidar com a entrada -1 da matriz. Para isso, consideramos o problema \prob{Permanent mod N} que obviamente se reduz a \prob{PermanentGeral}. 
+
+Assim, podemos calcular o permanente de $G$ mod $N$, para $N$ grande, digamos $N = 2^{8(3m)} + 1$. Então podemos substuir a aresta -1 pelo dispositivo da Figura~\ref{fig:DoplusM1}.
+
+
+\begin{figure}
+\centering
+\begin{tikzpicture}[->,>=stealth',auto,node distance=3cm,
+  thick,main node/.style={circle,draw,font=\sffamily\small\bfseries}]
+
+  \node[main node] (a) { };
+  \node[main node] (x) [below right=0.5 and 0.5 of a] { };
+  \node[main node] (b) [below left=0.5 and 0.5 of x] { };
+
+  \path[every node/.style={font=\sffamily\small}]
+    (b) edge[bend left=20] node {} (a)
+    (b) edge[bend right=10] node {} (x)
+    (x) edge[bend right=10] node {} (a)
+    (x) edge[loop right] node {} (x)
+    (a) edge[loop left] node {} (a)
+    ;  
+
+
+\end{tikzpicture}
+\caption{Dispositivo para substituir arestas de peso $2^n$ por $n$ concatenações}
+\label{fig:DoplusM1}
+\end{figure}
+
+E finalmente, o permanente de $G$ mod $N$ é $(\#\phi)4^{3m}$ e, por causa do mod $N$, temos a correspondência com emparelhamentos perfeitos.
 \end{proof}
-
-
-\pagebreak
-\section{Aproximações em \SP}
-
-\pagebreak
-\section{Teorema de Toda}
-
-
 %----------------------------------------------------------------------------------------
 \pagebreak
 \begin{thebibliography}{1}
@@ -507,7 +719,11 @@ Nossa construção usa três dispositivos $D_\oplus$ por cláusula, totalizando 
 
 \bibitem{Arora09} Arora, Sanjeev, and Boaz Barak. Computational complexity: a modern approach. Cambridge University Press, 2009.
 
+\bibitem{Fenner94} Fenner, Stephen A., Lance J. Fortnow, and Stuart A. Kurtz. "Gap-definable counting classes." Journal of Computer and System Sciences 48.1 (1994): 116-148.
+
 \bibitem{Fortnow97} Fortnow, Lance. "Counting complexity." Complexity theory retrospective II (1997): 81-107.
+
+\bibitem{Papadim03} Papadimitriou, Christos H. Computational complexity. John Wiley and Sons Ltd., 2003.
 
 \end{thebibliography}
 
