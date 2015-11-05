@@ -86,6 +86,7 @@
 \newcommand{\mwords}{\Sigma^*\xspace}
 
 \renewcommand{\P}{\textbf{P}\xspace}
+\newcommand{\PH}{\textbf{PH}\xspace}
 \newcommand{\UP}{\textbf{UP}\xspace}
 \newcommand{\BPP}{\textbf{BPP}\xspace}
 \newcommand{\parP}{\textbf{$\oplus$P}\xspace}
@@ -709,6 +710,166 @@ Assim, podemos calcular o permanente de $G$ mod $N$, para $N$ grande, digamos $N
 
 E finalmente, o permanente de $G$ mod $N$ é $(\#\phi)4^{3m}$ e, por causa do mod $N$, temos a correspondência com emparelhamentos perfeitos.
 \end{proof}
+
+\pagebreak
+\section{Poder das Classes de Contagem}
+
+Nesta seção, estudamos as relações entre as classes de contagem e algumas classes conhecidas. 
+
+\begin{theorem} Toda função $f$ em \FP também está em \gP. Em particular, se $f(x)$ é não negativo para toda string $x$, então $f$ também está em \SP.
+\end{theorem}
+\begin{proof}
+Seja $f$ uma função em \FP. Construa uma \npmach M tal que, dada uma entrada $x$:
+\begin{enumerate}
+  \item Calcula $n = |f(x)|$.
+  \item Chuta $n$ caminhos de computação.
+  \item Se $f(x) > 0$, então aceita todos os caminhos.
+  \item Senão, rejeita todos.
+\end{enumerate}
+
+Claro que, para toda palavra x, $\del M = f(x)$ e, se $f(x) \geq 0$, então $\# M(x) = f(x)$.
+\end{proof}
+
+Mostramos a seguir que \gP e \SP têm o mesmo poder de computação.
+\begin{theorem}
+Para toda função $f$, as seguintes afirmações são equivalentes:
+\begin{enumerate}
+  \item $f$ pertence a \gP.
+  \item $f$ é dada pela diferença entre duas funções de \SP.
+  \item $f$ é dada pela diferença entre uma função de \SP e outra de \FP.
+  \item $f$ é dada pela diferença entre uma função de \FP e outra de \SP.
+\end{enumerate}
+\end{theorem}
+\begin{proof} \hfill
+
+\paragraph{$1 \Rightarrow 2$}
+É direto da definição pois
+\begin{align*}
+  f \in \gP \Rightarrow f = \del M \Rightarrow = \# M - \# \bar{M}
+\end{align*}
+
+\paragraph{$2 \Rightarrow 3$}
+Sejam $f$ e $g$ funções de \SP. Então para algum par de máquinas-NP, $M_1$ e $M_2$, temos que $f = \# M_1$ e $g = \# M_2$. Suponha que $M_2$ tem, para algum polinômio $q$ no tamanho da entrada, $2^{q(|x|)}$ caminhos de computação (caso contrário, basta adicionar o número de caminhos restantes). Construa uma máquina $N$ tal que:
+\begin{enumerate}
+  \item N se ramifica em dois ramos, $L$ e $R$.
+  \item Simula $M_1$ no ramo $L$ e $M_2$ no ramo $R$.
+\end{enumerate}
+
+Então, para qualquer $x$:
+\begin{align*}
+f(x) - g(x) &= \# M_1(x) - \# M_2(x) \\
+            &= \# M_1(x) + \# M_2(x) - 2^{q(|x|)} \\
+            &= \# N(x) - 2^{q(|x|)}
+\end{align*}
+
+E claro que $\# N \in \SP$ e $2^{q(|x|)} \in \FP$. 
+
+\paragraph{Pelo fechamento sob a negação, $3 \Leftrightarrow 4$.}
+
+\paragraph{$3 \Rightarrow 1$}
+Sejam $f$ função de \SP e $g$ função de \FP. Seja $M$ a \npmach tal que $\del M = f$. Construa $N$ tal que, para cada palavra $x$, $N(x)$ é dada por $M(x)$ com mais $g(x)$ caminhos de rejeição. Então:
+\begin{align*}
+\# N(x)       &= \# M(x) \\
+\# \bar{N}(x) &= \# \bar{M} (x)  + g(x)
+\end{align*}
+
+E assim:
+\begin{align*}
+\del N(x) &= \# N(x) - \# \bar{N}(x) \\
+          &= \# M(x) - \# \bar{M} (x) - g(x) \\
+          &= f(x) - g(x)
+\end{align*}
+\end{proof}
+
+Uma consequência deste teorema, é que $\gP \subset \FP^{\SP[1]}$. Lembre que $\FP^{\SP[k]}$ contém as funções computáveis em tempo polinomial dado que se pode fazer até $k$ consulta a um oráculo de \SP.
+
+\begin{theorem}
+Seja $f$ função de \FP e $g$ função de \SP (ou \gP). Então $g \circ f$ está em \SP (ou \gP).
+\end{theorem}
+\begin{proof}
+Seja $M$ \npmach tal que $\# M = g$. Construa a \npmach $N$ que, para uma entrada $x$ calcula $f(x)$ e simula $M(f(x))$. Claro que $\# N(x) = \# M(f(x)) = g(f(x))$.
+
+\end{proof}
+
+Babai e Fortnow mostraram em \cite{Babai91} que qualquer função em \gP pode ser expressada como polinômios construídos de maneira simples. Não provaremos este resultado.
+
+\begin{definition} Um \textbf{programa de aritmética retardada com substituição binária} (RAB) é uma sequência $\{p_1, p_2, \dots\}$ de instruções tais que, para todo $k$, vale uma das condições seguintes:
+\begin{enumerate}
+  \item $p_k = 0$ ou $p_k = 1$;
+  \item $p_k = x_i$ para algum $ i \leq k$;
+  \item $p_k = 1 - x_i$ para algum $ i \leq k$;
+  \item $p_k = p_i - p_j$ para algum par $i, j < k$;
+  \item $p_k = p_i p_j$ para algum par $i,j$ tais que $i + j \leq k$;
+  \item $p_k = p_j(x_i = 0)$ ou $p_k = p_j(x_i = 1)$, para algum par $i, j < k$. (substituição binária)
+\end{enumerate}
+Dizemos que um RAB é uniforme se existe uma máquina de Turing polinomial que, com entrada $1^n$ imprime as primeiras $n$ instruções.
+
+\end{definition}
+
+\begin{theorem}
+Para toda função $f$, as afirmações seguintes são equivalentes:
+\begin{enumerate}
+
+  \item $f \in \gP$
+  \item Existe um RAB uniforme se existe um polinômio $q(n)$ tal que $p_{q(n)}$  tem variáveis livres $x_1, \dots, x_n$ e tal que, para cada palavra $x \in \mwords$, tem-se que $f(x) = p_{q(n)}(x)$.
+\end{enumerate}
+
+\end{theorem}
+
+
+Vamos mostrar agora que \gP e \PP têm mesmo poder computacional. Mas antes, mostramos uma caracterização alternativa para \PP.
+
+\begin{theorem}
+A classe \PP contém todas as linguagens L para que existe uma função $f$ em \gP tal que, para toda palavra $x$
+\begin{itemize}
+  \item Se $x \in L$, então $f(x) > 0$ 
+  \item Se $x \not\in L$, então $f(x) < 0$ 
+\end{itemize}
+\end{theorem}
+
+\begin{proof}
+Sabemos, da definição de \PP, que se $x \in \PP$, então existe uma função $g$ de \gP tal que:
+\begin{itemize}
+   \item Se $x \in L$, então $g(x) > 0$
+   \item Se $x \not\in L$, então $g(x) \leq 0$
+\end{itemize}
+Considere a função $f$ tal que $f(x) = 2g(x) - 1$. Sabemos que $f \in \gP$ e, $f$ é tal que:
+\begin{itemize}
+   \item Se $g(x) > 0$, então $f(x) > 0$
+   \item Se $g(x) \leq 0$, então $f(x) < 0$
+\end{itemize}
+\end{proof}
+
+Dessa caracterização, é direto que \PP é fechada sob complemento.
+
+
+Mostramos agora que \PP e \gP têm mesmo poder computacional.
+\begin{theorem}
+$\P^\PP = \P^\gP$
+\end{theorem}
+\begin{proof}
+Como \gP é tão ou mais forte que \PP, precisamos apenas mostrar que toda função $g$ de \gP está em $\FP^\PP$. Considere a linguagem:
+
+$$
+L = \{ \langle x, k \rangle : g(x) > k \}.
+$$
+
+$L \in \PP$, comprovado pelo fato de a função $f(x, k) = g(x) - k$ estar em $\gP$. Então, dada uma palavra $x$, podemos calcular $g(x)$ fazendo uma busca binária com ajuda de um oráculo para $L$.
+
+\end{proof}
+
+Finalmente, enunciamos, sem demonstração, o teorema de Toda sobre a relação das classes de contagem e a hierarquia polinomial.
+
+\begin{theorem} [Toda]
+$$ \PH \subseteq \P^{\gP[1]} $$
+\end{theorem}
+
+E suas consequências imediatas são:
+\begin{enumerate}
+\item $ \PH \subseteq \P^{\SP[1]}$
+\item $ \PH \subseteq \P^{\PP}$
+\end{enumerate}
+
 %----------------------------------------------------------------------------------------
 \pagebreak
 \begin{thebibliography}{1}
@@ -724,6 +885,8 @@ E finalmente, o permanente de $G$ mod $N$ é $(\#\phi)4^{3m}$ e, por causa do mo
 \bibitem{Fortnow97} Fortnow, Lance. "Counting complexity." Complexity theory retrospective II (1997): 81-107.
 
 \bibitem{Papadim03} Papadimitriou, Christos H. Computational complexity. John Wiley and Sons Ltd., 2003.
+
+\bibitem{Babai91} Babai, László, and Lance Fortnow. "Arithmetization: A new method in structural complexity theory." Computational Complexity 1.1 (1991): 41-66.
 
 \end{thebibliography}
 
